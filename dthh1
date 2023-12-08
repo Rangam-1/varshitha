@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+    stages {
+        stage("InstallingDocker") {
+            steps {
+                sh "sudo yum install docker -y"
+            }
+        }
+        stage("StartingDocker") {
+            steps {
+                sh "sudo systemctl start docker"
+            }
+        }
+        stage("InstallingGit") {
+            steps {
+                sh "sudo yum install git -y"
+            }
+        }
+        stage("CheckOut") {
+            steps {
+                git branch: 'main', url: 'https://github.com/RAHAMSHAIK007/devopsbyrahamabcd.git'
+            }
+        }
+        stage("CopyingFile"){
+            steps {
+                sh "sudo cp /var/lib/jenkins/workspace/pipeline/index.html /root"
+            }
+        }
+         stage("Build") {
+            steps {
+                sh "sudo docker build -t venky:v1 /root"
+            }
+        }
+        stage("ImageName"){
+            steps{
+                sh "sudo docker images"
+            }
+        }
+        stage("RunContainer") {
+            steps {
+                sh "sudo docker run -i --name rangam -p 8081:8082 venky:v1"
+            }
+        }
+        stage("startContainer") {
+            steps {
+                sh "sudo docker start rangam"
+            }
+        }
+        stage("CheckoutInsideContainer") {
+            steps {
+                sh "sudo docker attach rangam"
+            }
+        }
+    }
+}
