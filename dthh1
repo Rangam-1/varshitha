@@ -26,6 +26,11 @@ pipeline {
                 sh "sudo cp /var/lib/jenkins/workspace/pipeline/index.html /root"
             }
         }
+stage("InstallingMaven") {
+steps {
+sh "sudo yum install maven -y"
+    }
+}
          stage("Build") {
             steps {
                 sh "sudo docker build -t venky:v1 /root"
