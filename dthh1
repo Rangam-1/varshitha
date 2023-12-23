@@ -1,6 +1,16 @@
 pipeline {
     agent any
-    stages {
+    stages{
+        stage("InstallingGit") {
+            steps {
+                sh "sudo yum install git -y"
+            }
+        }
+        stage("GitCheckout") {
+            steps {
+                git branch: 'main', url: 'https://github.com/Rangam-1/Venky.git'
+            }
+        }
         stage("InstallingDocker") {
             steps {
                 sh "sudo yum install docker -y"
@@ -11,49 +21,19 @@ pipeline {
                 sh "sudo systemctl start docker"
             }
         }
-        stage("InstallingGit") {
+        stage("statusDocker") {
             steps {
-                sh "sudo yum install git -y"
+                sh "sudo systemctl status docker"
             }
         }
-        stage("CheckOut") {
-            steps {
-                git branch: 'main', url: 'https://github.com/RAHAMSHAIK007/devopsbyrahamabcd.git'
-            }
-        }
-        stage("CopyingFile"){
-            steps {
-                sh "sudo cp /var/lib/jenkins/workspace/pipeline/index.html /root"
-            }
-        }
-stage("InstallingMaven") {
-steps {
-sh "sudo yum install maven -y"
-    }
-}
-         stage("Build") {
-            steps {
-                sh "sudo docker build -t venky:v1 /root"
-            }
-        }
-        stage("ImageName"){
+        stage("CreatingImage"){
             steps{
-                sh "sudo docker images"
+                sh "sudo docker build -t $image:v1 ."
             }
         }
-        stage("RunContainer") {
-            steps {
-                sh "sudo docker run -i --name rangam -p 8081:8082 venky:v1"
-            }
-        }
-        stage("startContainer") {
-            steps {
-                sh "sudo docker start rangam"
-            }
-        }
-        stage("CheckoutInsideContainer") {
-            steps {
-                sh "sudo docker attach rangam"
+        stage("dockerLogIn"){
+            steps{
+                sh "sudo docker login -u venkirangam@gmail.com -p Venki@1122"
             }
         }
     }
